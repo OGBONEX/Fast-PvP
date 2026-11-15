@@ -40,7 +40,7 @@ A single Fabric JAR is not compatible with every Minecraft release. The initial 
 
 ## Still to implement
 
-Resizable individual HUD widgets, drag alignment guides, a full color-picker/settings screen, low-fire rendering, custom hit sounds, configurable hit color, visual damage indicators, and dedicated compatibility builds for the rest of the requested Minecraft versions.
+Resizable individual HUD widgets, visual drag-alignment guides, a full color-picker/settings screen, and dedicated compatibility builds for the rest of the requested Minecraft versions.
 
 ## Scope
 
