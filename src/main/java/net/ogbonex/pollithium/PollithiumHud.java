@@ -103,7 +103,12 @@ public final class PollithiumHud {
     private static String armorSummary(MinecraftClient client) {
         StringBuilder out = new StringBuilder();
         for (int i = 3; i >= 0; i--) {
-            ItemStack stack = client.player.getEquippedStack(switch (i) {\n                case 3 -> EquipmentSlot.HEAD;\n                case 2 -> EquipmentSlot.CHEST;\n                case 1 -> EquipmentSlot.LEGS;\n                default -> EquipmentSlot.FEET;\n            });
+            ItemStack stack = client.player.getEquippedStack(switch (i) {
+                case 3 -> EquipmentSlot.HEAD;
+                case 2 -> EquipmentSlot.CHEST;
+                case 1 -> EquipmentSlot.LEGS;
+                default -> EquipmentSlot.FEET;
+            });
             if (stack.isEmpty()) out.append("--");
             else if (stack.isDamageable()) out.append(Math.max(0, stack.getMaxDamage() - stack.getDamage()));
             else out.append("OK");
