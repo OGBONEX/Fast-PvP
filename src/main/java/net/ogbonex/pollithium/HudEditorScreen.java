@@ -239,10 +239,10 @@ public final class HudEditorScreen extends Screen {
             case "ARMOR" -> new int[]{8, 224, 180, 30};
             case "EFFECTS" -> new int[]{8, 260, 180, 42};
             case "KEYS" -> new int[]{8, 308, 92, 52};
-            case "BIOME" -> new int[]{8, 332, 180, 30};
-            case "DIMENSION" -> new int[]{8, 368, 180, 30};
-            case "WORLDTIME" -> new int[]{8, 404, 180, 30};
-            case "MEMORY" -> new int[]{8, 440, 190, 30};
+            case "BIOME" -> new int[]{8, 368, 180, 30};
+            case "DIMENSION" -> new int[]{8, 404, 180, 30};
+            case "WORLDTIME" -> new int[]{8, 440, 180, 30};
+            case "MEMORY" -> new int[]{8, 476, 190, 30};
             default -> new int[]{8, 8, 120, 30};
         };
     }
