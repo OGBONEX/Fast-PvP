@@ -5,8 +5,7 @@
   "client": [
     "InGameHudMixin",
     "LowFireMixin",
-    "ShulkerBoxTooltipMixin",
-    "HitFeedbackMixin"
+    "ShulkerBoxTooltipMixin"
   ],
   "injectors": {
     "defaultRequire": 1
