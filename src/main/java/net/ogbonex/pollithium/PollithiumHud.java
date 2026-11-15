@@ -3,6 +3,7 @@ package net.ogbonex.pollithium;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
@@ -102,7 +103,7 @@ public final class PollithiumHud {
     private static String armorSummary(MinecraftClient client) {
         StringBuilder out = new StringBuilder();
         for (int i = 3; i >= 0; i--) {
-            ItemStack stack = client.player.getInventory().getArmorStack(i);
+            ItemStack stack = client.player.getEquippedStack(switch (i) {\n                case 3 -> EquipmentSlot.HEAD;\n                case 2 -> EquipmentSlot.CHEST;\n                case 1 -> EquipmentSlot.LEGS;\n                default -> EquipmentSlot.FEET;\n            });
             if (stack.isEmpty()) out.append("--");
             else if (stack.isDamageable()) out.append(Math.max(0, stack.getMaxDamage() - stack.getDamage()));
             else out.append("OK");
