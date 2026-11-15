@@ -3,7 +3,10 @@
   "package": "net.ogbonex.pollithium.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "InGameHudMixin"
+    "InGameHudMixin",
+    "LowFireMixin",
+    "ShulkerBoxTooltipMixin",
+    "HitFeedbackMixin"
   ],
   "injectors": {
     "defaultRequire": 1
