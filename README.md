@@ -1,30 +1,26 @@
 # Pollithium
 
-Pollithium is a client-side Fabric PvP utility mod with a Lunar-inspired configurable HUD. It is designed for information and visual customization, not automated combat or gameplay cheats.
+Pollithium is a client-side Fabric utility mod with a configurable HUD and visual customization. It is designed for information display and interface personalization.
 
-## Implemented in the current source
+## Current implementation
 
-- FPS counter.
-- Server ping display.
-- XYZ coordinates.
-- Cardinal direction.
-- Local clock.
-- CPS counter for left and right mouse clicks.
-- Armor durability values.
-- Active potion/effect names, amplifier levels, and remaining time.
+- FPS, server ping, XYZ coordinates, cardinal direction, and local clock.
+- Left/right click-rate counter.
+- Armor durability and active potion/effect information.
 - WASD keystrokes display.
-- Draggable HUD position with saved configuration.
-- HUD editor toggles for each module.
-- Dark translucent HUD panel and configurable accent/panel colors in config.
-- Custom crosshair that replaces the vanilla crosshair when enabled.
+- Independent HUD widgets: each module has its own saved position and size.
+- HUD editor with widget selection, drag-to-move, bottom-right drag-to-resize, and 8-pixel snapping.
+- Visual alignment guides when a selected widget reaches the screen's horizontal or vertical center.
+- Custom accent-color editor accepting six-digit RGB or eight-digit ARGB hexadecimal values.
+- Dark translucent widget panels and saved settings in `config/pollithium.json`.
+- Optional custom crosshair, low-fire display, and compact Shulker Box contents tooltip.
 - Hold-to-zoom keybind (C by default), restoring the previous FOV when released.
-- Toggle sprint keybind (unbound by default; enable it in the HUD editor first).
+- Optional toggle-sprint keybind (unbound by default; enable it in the editor first).
 - F8 toggles the HUD; Right Shift opens the HUD editor.
-- Settings persist in `config/pollithium.json`.
 
-## Build target
+## Current build target
 
-The first build target is Minecraft **1.21.11**, Fabric, and Java 21.
+The current source tree targets **Minecraft 1.21.11**, Fabric, and Java 21.
 
 1. Install JDK 21.
 2. Install Gradle 8.14.3 or newer.
@@ -32,33 +28,32 @@ The first build target is Minecraft **1.21.11**, Fabric, and Java 21.
 4. Run `gradle clean build --no-daemon`.
 5. Find the mod JAR in `build/libs/`.
 
-A GitHub Actions workflow builds the project on pushes and pull requests and uploads the JAR as a workflow artifact when the build succeeds.
+GitHub Actions runs the 1.21.11 build on pushes and pull requests and uploads the JAR when the build succeeds. A successful CI run and an in-game test are still required before calling a release ready.
 
-## Minecraft version coverage
+## Minecraft version compatibility
 
-A single Fabric JAR is not compatible with every Minecraft release. The initial target is 1.21.11. Separate build configurations and testing are required for 1.20.x and the newer 26.x versions. Those targets are not yet included.
+A single Fabric JAR cannot cover every Minecraft version. The compatibility status is documented in [versions/README.md](versions/README.md).
 
-## Still to implement
+- 1.21.11 is the active source/build target.
+- 1.20.x requires a separate compatibility port and build.
+- 26.1 and later require a separate port to the unobfuscated Minecraft toolchain and updated Fabric APIs.
 
-Resizable individual HUD widgets, visual drag-alignment guides, a full color-picker/settings screen, and dedicated compatibility builds for the rest of the requested Minecraft versions.
+Do not install the 1.21.11 JAR into a different Minecraft version.
+
+## Editor use
+
+1. Press **Right Shift** to open the editor.
+2. Use the **Selected** button to choose a widget.
+3. Drag the selected preview to move it. Drag its bottom-right corner to resize it.
+4. Use the HEX field with `RRGGBB` or `AARRGGBB` and press **Apply color**.
+5. Close the editor to save settings.
+
+Widgets that are currently positioned underneath the editor's left settings column are shown in a movable preview area on the right while editing. Their saved HUD coordinates are still updated by the same drag distance.
 
 ## Scope
 
-No aim assistance, autoclicking, reach changes, kill aura, velocity manipulation, or automated combat features.
+Pollithium focuses on HUD information and visual customization. It does not include automated combat or combat hit-feedback features.
 
 ## License
 
 MIT. See [LICENSE](LICENSE).
-
-
-## New options added
-
-The latest implementation adds:
-- **Low fire** toggle in the Pollithium settings screen.
-- **Shulker box tooltip** toggle. When enabled, hovering a shulker box item adds a compact contents list to its tooltip.
-- HUD accent-color palette cycling controls.
-- HUD position snapping to an 8-pixel grid while dragging.
-
-Open the settings with **Right Shift**. Toggle the HUD with **F8**. Zoom is held with **C**.
-
-These additions are committed to the repository, but they are not yet confirmed by a successful Gradle build or an in-game test. The advanced per-widget resize/independent placement editor and separately tested Minecraft-version builds are still outstanding. Combat hit-feedback enhancements are not included. Do not treat the project as release-ready until those checks pass.
