@@ -18,7 +18,6 @@ public final class PollithiumConfig {
     public static boolean hudEnabled = true;
     public static boolean showFps = true, showCoordinates = true, showPing = true, showKeystrokes = true, showCps = true;
     public static boolean showArmor = true, showEffects = true, showClock = false, showDirection = true, showCrosshair = false;
-        boolean showBiome = false, showDimension = false, showWorldTime = false, showMemory = false;
     public static boolean showBiome = false, showDimension = false, showWorldTime = false, showMemory = false;
     public static boolean toggleSprintEnabled = false, lowFireEnabled = true, shulkerBoxTooltipEnabled = true;
     public static int hudX = 8, hudY = 8, accentColor = 0xFF8B5CF6, panelColor = 0x990D111B;
@@ -91,6 +90,7 @@ public final class PollithiumConfig {
         boolean hudEnabled = true;
         boolean showFps = true, showCoordinates = true, showPing = true, showKeystrokes = true, showCps = true;
         boolean showArmor = true, showEffects = true, showClock = false, showDirection = true, showCrosshair = false;
+        boolean showBiome = false, showDimension = false, showWorldTime = false, showMemory = false;
         boolean toggleSprintEnabled = false, lowFireEnabled = true, shulkerBoxTooltipEnabled = true;
         int hudX = 8, hudY = 8, accentColor = 0xFF8B5CF6, panelColor = 0x990D111B;
         Map<String, WidgetLayout> widgets = new LinkedHashMap<>();
