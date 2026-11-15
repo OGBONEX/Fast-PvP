@@ -15,8 +15,7 @@ public final class PollithiumConfig {
     public static boolean showFps=true, showCoordinates=true, showPing=true, showKeystrokes=true, showCps=true;
     public static boolean showArmor=true, showEffects=true, showClock=false, showDirection=true, showCrosshair=false;
     public static boolean toggleSprintEnabled=false, lowFireEnabled=true, shulkerBoxTooltipEnabled=true;
-    public static boolean hitSoundEnabled=false, hitMarkerEnabled=true;
-    public static int hudX=8, hudY=8, accentColor=0xFF8B5CF6, panelColor=0x990D111B, hitColor=0xFFFF5555;
+        public static int hudX=8, hudY=8, accentColor=0xFF8B5CF6, panelColor=0x990D111B;
     private PollithiumConfig() {}
     public static void load() {
         if (!Files.exists(FILE)) return;
@@ -27,9 +26,9 @@ public final class PollithiumConfig {
             showKeystrokes=s.showKeystrokes; showCps=s.showCps; showArmor=s.showArmor; showEffects=s.showEffects;
             showClock=s.showClock; showDirection=s.showDirection; showCrosshair=s.showCrosshair;
             toggleSprintEnabled=s.toggleSprintEnabled; lowFireEnabled=s.lowFireEnabled;
-            shulkerBoxTooltipEnabled=s.shulkerBoxTooltipEnabled; hitSoundEnabled=s.hitSoundEnabled;
-            hitMarkerEnabled=s.hitMarkerEnabled; hudX=Math.max(0,s.hudX); hudY=Math.max(0,s.hudY);
-            accentColor=s.accentColor; panelColor=s.panelColor; hitColor=s.hitColor;
+            shulkerBoxTooltipEnabled=s.shulkerBoxTooltipEnabled;
+hudX=Math.max(0,s.hudX); hudY=Math.max(0,s.hudY);
+            accentColor=s.accentColor; panelColor=s.panelColor;
         } catch(Exception e){System.err.println("[Pollithium] Could not load config: "+e.getMessage());}
     }
     public static void save() {
@@ -39,16 +38,16 @@ public final class PollithiumConfig {
             s.showKeystrokes=showKeystrokes; s.showCps=showCps; s.showArmor=showArmor; s.showEffects=showEffects;
             s.showClock=showClock; s.showDirection=showDirection; s.showCrosshair=showCrosshair;
             s.toggleSprintEnabled=toggleSprintEnabled; s.lowFireEnabled=lowFireEnabled;
-            s.shulkerBoxTooltipEnabled=shulkerBoxTooltipEnabled; s.hitSoundEnabled=hitSoundEnabled;
-            s.hitMarkerEnabled=hitMarkerEnabled; s.hudX=hudX; s.hudY=hudY;
-            s.accentColor=accentColor; s.panelColor=panelColor; s.hitColor=hitColor;
+            s.shulkerBoxTooltipEnabled=shulkerBoxTooltipEnabled;
+s.hudX=hudX; s.hudY=hudY;
+            s.accentColor=accentColor; s.panelColor=panelColor;
             try(Writer writer=Files.newBufferedWriter(FILE)){GSON.toJson(s,writer);}
         } catch(Exception e){System.err.println("[Pollithium] Could not save config: "+e.getMessage());}
     }
     private static final class Settings {
         boolean hudEnabled=true,showFps=true,showCoordinates=true,showPing=true,showKeystrokes=true,showCps=true;
         boolean showArmor=true,showEffects=true,showClock=false,showDirection=true,showCrosshair=false;
-        boolean toggleSprintEnabled=false,lowFireEnabled=true,shulkerBoxTooltipEnabled=true,hitSoundEnabled=false,hitMarkerEnabled=true;
-        int hudX=8,hudY=8,accentColor=0xFF8B5CF6,panelColor=0x990D111B,hitColor=0xFFFF5555;
+        boolean toggleSprintEnabled=false,lowFireEnabled=true,shulkerBoxTooltipEnabled=true;
+        int hudX=8,hudY=8,accentColor=0xFF8B5CF6,panelColor=0x990D111B;
     }
 }
