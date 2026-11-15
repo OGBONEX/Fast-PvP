@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "pollithium",
+  "version": "${version}",
+  "name": "Pollithium",
+  "description": "A configurable client-side PvP utility HUD and visual customization mod.",
+  "authors": ["OGBONEX"],
+  "contact": {
+    "sources": "https://github.com/OGBONEX/Fast-PvP"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["net.ogbonex.pollithium.PollithiumClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.1",
+    "minecraft": "1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
