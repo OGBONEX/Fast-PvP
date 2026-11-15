@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,138 +14,202 @@ import java.util.function.BooleanSupplier;
 
 public final class HudEditorScreen extends Screen {
     private static final Map<String, String> WIDGETS = new LinkedHashMap<>();
+    private static final int[] PALETTE = {
+            0xFF8B5CF6, 0xFF3B82F6, 0xFF06B6D4, 0xFF10B981,
+            0xFF84CC16, 0xFFFACC15, 0xFFF97316, 0xFFEF4444,
+            0xFFEC4899, 0xFFFFFFFF, 0xFF9CA3AF, 0xFF111827
+    };
+    private static final String[] PALETTE_LABELS = {
+            "P", "B", "C", "G", "L", "Y", "O", "R", "M", "W", "S", "K"
+    };
+
     static {
         WIDGETS.put("FPS", "FPS");
         WIDGETS.put("PING", "Ping");
-        WIDGETS.put("COORDS", "Coordinates");
-        WIDGETS.put("DIRECTION", "Direction");
+        WIDGETS.put("COORDS", "XYZ");
+        WIDGETS.put("DIRECTION", "Facing");
         WIDGETS.put("CLOCK", "Clock");
         WIDGETS.put("CPS", "CPS");
         WIDGETS.put("ARMOR", "Armor");
-        WIDGETS.put("EFFECTS", "Potion effects");
-        WIDGETS.put("KEYS", "Keystrokes");
+        WIDGETS.put("EFFECTS", "Effects");
+        WIDGETS.put("KEYS", "Keys");
     }
 
     private String selected = "FPS";
     private boolean dragging;
     private boolean resizing;
-    private double lastMouseX, lastMouseY;
-    private TextFieldWidget colorField;
+    private int previewOffsetX;
+    private int previewOffsetY;
+    private TextFieldWidget accentField;
+    private TextFieldWidget panelField;
+    private int sidebarWidth;
+    private int rightX;
+    private int rightWidth;
+    private int previewX;
+    private int previewY;
 
-    public HudEditorScreen() { super(Text.literal("Pollithium HUD Editor")); }
+    public HudEditorScreen() {
+        super(Text.literal("Pollithium HUD Editor"));
+    }
 
     @Override
     protected void init() {
-        int left = 8, top = 26;
-        addToggle("FPS", PollithiumConfig.showFps, () -> PollithiumConfig.showFps = !PollithiumConfig.showFps, () -> PollithiumConfig.showFps, left, top);
-        addToggle("Ping", PollithiumConfig.showPing, () -> PollithiumConfig.showPing = !PollithiumConfig.showPing, () -> PollithiumConfig.showPing, left, top + 23);
-        addToggle("Coordinates", PollithiumConfig.showCoordinates, () -> PollithiumConfig.showCoordinates = !PollithiumConfig.showCoordinates, () -> PollithiumConfig.showCoordinates, left, top + 46);
-        addToggle("Keystrokes", PollithiumConfig.showKeystrokes, () -> PollithiumConfig.showKeystrokes = !PollithiumConfig.showKeystrokes, () -> PollithiumConfig.showKeystrokes, left, top + 69);
-        addToggle("CPS", PollithiumConfig.showCps, () -> PollithiumConfig.showCps = !PollithiumConfig.showCps, () -> PollithiumConfig.showCps, left, top + 92);
-        addToggle("Armor", PollithiumConfig.showArmor, () -> PollithiumConfig.showArmor = !PollithiumConfig.showArmor, () -> PollithiumConfig.showArmor, left, top + 115);
-        addToggle("Potion effects", PollithiumConfig.showEffects, () -> PollithiumConfig.showEffects = !PollithiumConfig.showEffects, () -> PollithiumConfig.showEffects, left, top + 138);
-        addToggle("Clock", PollithiumConfig.showClock, () -> PollithiumConfig.showClock = !PollithiumConfig.showClock, () -> PollithiumConfig.showClock, left, top + 161);
-        addToggle("Direction", PollithiumConfig.showDirection, () -> PollithiumConfig.showDirection = !PollithiumConfig.showDirection, () -> PollithiumConfig.showDirection, left, top + 184);
-        addToggle("Low fire", PollithiumConfig.lowFireEnabled, () -> PollithiumConfig.lowFireEnabled = !PollithiumConfig.lowFireEnabled, () -> PollithiumConfig.lowFireEnabled, left, top + 207);
-        addToggle("Shulker tooltip", PollithiumConfig.shulkerBoxTooltipEnabled, () -> PollithiumConfig.shulkerBoxTooltipEnabled = !PollithiumConfig.shulkerBoxTooltipEnabled, () -> PollithiumConfig.shulkerBoxTooltipEnabled, left, top + 230);
-        addToggle("Custom crosshair", PollithiumConfig.showCrosshair, () -> PollithiumConfig.showCrosshair = !PollithiumConfig.showCrosshair, () -> PollithiumConfig.showCrosshair, left, top + 253);
-        addToggle("Toggle sprint", PollithiumConfig.toggleSprintEnabled, () -> PollithiumConfig.toggleSprintEnabled = !PollithiumConfig.toggleSprintEnabled, () -> PollithiumConfig.toggleSprintEnabled, left, top + 276);
+        sidebarWidth = Math.min(216, Math.max(144, width / 2));
+        rightX = sidebarWidth + 8;
+        rightWidth = Math.max(72, width - rightX - 8);
+        previewX = rightX;
+        previewY = Math.max(188, height - 58);
 
-        addDrawableChild(ButtonWidget.builder(Text.literal("Selected: " + WIDGETS.get(selected)), b -> {
+        contextPanel();
+        addToggle("FPS", () -> PollithiumConfig.showFps = !PollithiumConfig.showFps, () -> PollithiumConfig.showFps, 0);
+        addToggle("Ping", () -> PollithiumConfig.showPing = !PollithiumConfig.showPing, () -> PollithiumConfig.showPing, 1);
+        addToggle("XYZ", () -> PollithiumConfig.showCoordinates = !PollithiumConfig.showCoordinates, () -> PollithiumConfig.showCoordinates, 2);
+        addToggle("Keys", () -> PollithiumConfig.showKeystrokes = !PollithiumConfig.showKeystrokes, () -> PollithiumConfig.showKeystrokes, 3);
+        addToggle("CPS", () -> PollithiumConfig.showCps = !PollithiumConfig.showCps, () -> PollithiumConfig.showCps, 4);
+        addToggle("Armor", () -> PollithiumConfig.showArmor = !PollithiumConfig.showArmor, () -> PollithiumConfig.showArmor, 5);
+        addToggle("Effects", () -> PollithiumConfig.showEffects = !PollithiumConfig.showEffects, () -> PollithiumConfig.showEffects, 6);
+        addToggle("Clock", () -> PollithiumConfig.showClock = !PollithiumConfig.showClock, () -> PollithiumConfig.showClock, 7);
+        addToggle("Facing", () -> PollithiumConfig.showDirection = !PollithiumConfig.showDirection, () -> PollithiumConfig.showDirection, 8);
+        addToggle("Low fire", () -> PollithiumConfig.lowFireEnabled = !PollithiumConfig.lowFireEnabled, () -> PollithiumConfig.lowFireEnabled, 9);
+        addToggle("Shulker", () -> PollithiumConfig.shulkerBoxTooltipEnabled = !PollithiumConfig.shulkerBoxTooltipEnabled, () -> PollithiumConfig.shulkerBoxTooltipEnabled, 10);
+        addToggle("Crosshair", () -> PollithiumConfig.showCrosshair = !PollithiumConfig.showCrosshair, () -> PollithiumConfig.showCrosshair, 11);
+        addToggle("Sprint", () -> PollithiumConfig.toggleSprintEnabled = !PollithiumConfig.toggleSprintEnabled, () -> PollithiumConfig.toggleSprintEnabled, 12);
+
+        addDrawableChild(ButtonWidget.builder(Text.literal("Widget: " + WIDGETS.get(selected)), button -> {
             String[] ids = WIDGETS.keySet().toArray(String[]::new);
             int index = java.util.Arrays.asList(ids).indexOf(selected);
             selected = ids[(index + 1) % ids.length];
-            b.setMessage(Text.literal("Selected: " + WIDGETS.get(selected)));
-        }).dimensions(224, 26, 190, 20).build());
+            previewOffsetX = 0;
+            previewOffsetY = 0;
+            button.setMessage(Text.literal("Widget: " + WIDGETS.get(selected)));
+        }).dimensions(rightX, 26, rightWidth, 20).build());
 
-        addDrawableChild(ButtonWidget.builder(Text.literal("Reset selected widget"), b -> {
+        addDrawableChild(ButtonWidget.builder(Text.literal("Reset selected"), button -> {
             PollithiumConfig.widgets.remove(selected);
+            previewOffsetX = 0;
+            previewOffsetY = 0;
             PollithiumConfig.save();
-        }).dimensions(224, 50, 190, 20).build());
+        }).dimensions(rightX, 50, rightWidth, 20).build());
 
-        colorField = new TextFieldWidget(textRenderer, 224, 88, 110, 20, Text.literal("Accent HEX"));
-        colorField.setMaxLength(8);
-        colorField.setText(String.format("%08X", PollithiumConfig.accentColor));
-        colorField.setPlaceholder(Text.literal("AARRGGBB"));
-        addDrawableChild(colorField);
-        addDrawableChild(ButtonWidget.builder(Text.literal("Apply color"), b -> applyColor())
-                .dimensions(338, 88, 76, 20).build());
-        addDrawableChild(ButtonWidget.builder(Text.literal("Reset HUD positions"), b -> {
+        int fieldWidth = Math.max(40, rightWidth - 48);
+        accentField = new TextFieldWidget(textRenderer, rightX, 80, fieldWidth, 20, Text.literal("Accent HEX"));
+        accentField.setMaxLength(8);
+        accentField.setText(String.format("%08X", PollithiumConfig.accentColor));
+        accentField.setPlaceholder(Text.literal("AARRGGBB"));
+        addDrawableChild(accentField);
+        addDrawableChild(ButtonWidget.builder(Text.literal("Set"), button -> applyHex(accentField, true))
+                .dimensions(rightX + fieldWidth + 4, 80, Math.max(40, rightWidth - fieldWidth - 4), 20).build());
+
+        panelField = new TextFieldWidget(textRenderer, rightX, 106, fieldWidth, 20, Text.literal("Panel HEX"));
+        panelField.setMaxLength(8);
+        panelField.setText(String.format("%08X", PollithiumConfig.panelColor));
+        panelField.setPlaceholder(Text.literal("AARRGGBB"));
+        addDrawableChild(panelField);
+        addDrawableChild(ButtonWidget.builder(Text.literal("Set"), button -> applyHex(panelField, false))
+                .dimensions(rightX + fieldWidth + 4, 106, Math.max(40, rightWidth - fieldWidth - 4), 20).build());
+
+        for (int i = 0; i < PALETTE.length; i++) {
+            final int color = PALETTE[i];
+            int col = i % 6;
+            int row = i / 6;
+            int cellWidth = Math.max(12, (rightWidth - 20) / 6);
+            addDrawableChild(ButtonWidget.builder(Text.literal(PALETTE_LABELS[i]), button -> {
+                PollithiumConfig.accentColor = color;
+                accentField.setText(String.format("%08X", color));
+                PollithiumConfig.save();
+            }).dimensions(rightX + col * (cellWidth + 3), 136 + row * 22, cellWidth, 19).build());
+        }
+
+        addDrawableChild(ButtonWidget.builder(Text.literal("Reset positions"), button -> {
             PollithiumConfig.widgets.clear();
-            PollithiumConfig.hudX = 8; PollithiumConfig.hudY = 8;
+            previewOffsetX = 0;
+            previewOffsetY = 0;
             PollithiumConfig.save();
-        }).dimensions(224, 114, 190, 20).build());
-        addDrawableChild(ButtonWidget.builder(Text.literal("Done"), b -> close())
-                .dimensions(224, 138, 190, 20).build());
+        }).dimensions(rightX, 184, rightWidth, 20).build());
+        addDrawableChild(ButtonWidget.builder(Text.literal("Done"), button -> close())
+                .dimensions(rightX, 208, rightWidth, 20).build());
     }
 
-    private void addToggle(String name, boolean initial, Runnable change, BooleanSupplier state, int x, int y) {
-        addDrawableChild(ButtonWidget.builder(Text.literal(name + ": " + (initial ? "ON" : "OFF")), b -> {
+    private void contextPanel() {
+        // Keeps the editor layout calculation in one place for narrow GUI scales.
+    }
+
+    private void addToggle(String name, Runnable change, BooleanSupplier state, int index) {
+        int col = index % 2;
+        int row = index / 2;
+        int cellWidth = Math.max(56, (sidebarWidth - 22) / 2);
+        int x = 8 + col * (cellWidth + 6);
+        int y = 28 + row * 22;
+        addDrawableChild(ButtonWidget.builder(Text.literal(name + ": " + (state.getAsBoolean() ? "ON" : "OFF")), button -> {
             change.run();
-            b.setMessage(Text.literal(name + ": " + (state.getAsBoolean() ? "ON" : "OFF")));
+            button.setMessage(Text.literal(name + ": " + (state.getAsBoolean() ? "ON" : "OFF")));
             PollithiumConfig.save();
-        }).dimensions(x, y, 200, 20).build());
+        }).dimensions(x, y, cellWidth, 19).build());
     }
 
-    private void applyColor() {
+    private void applyHex(TextFieldWidget field, boolean accent) {
         try {
-            String raw = colorField.getText().trim().replace("#", "");
+            String raw = field.getText().trim().replace("#", "");
+            if (raw.length() != 6 && raw.length() != 8) throw new NumberFormatException();
             long parsed = Long.parseLong(raw, 16);
             if (raw.length() == 6) parsed |= 0xFF000000L;
-            if (raw.length() != 6 && raw.length() != 8) throw new NumberFormatException("Use RRGGBB or AARRGGBB");
-            PollithiumConfig.accentColor = (int) parsed;
-            colorField.setEditableColor(0xFFFFFFFF);
+            if (accent) PollithiumConfig.accentColor = (int) parsed;
+            else PollithiumConfig.panelColor = (int) parsed;
+            field.setEditableColor(0xFFFFFFFF);
             PollithiumConfig.save();
-        } catch (NumberFormatException ex) {
-            colorField.setEditableColor(0xFFFF5555);
+        } catch (NumberFormatException exception) {
+            field.setEditableColor(0xFFFF5555);
         }
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         renderBackground(context, mouseX, mouseY, delta);
-        context.fill(0, 0, 216, height, 0xDD10141E);
+        context.fill(0, 0, sidebarWidth, height, 0xDD10141E);
+        context.fill(rightX - 4, 0, width, height, 0xAA080B12);
         context.drawText(textRenderer, title, 8, 8, 0xFFFFFFFF, false);
-        context.drawText(textRenderer, "Select a widget, then drag it.", 224, 166, 0xFFCCCCCC, false);
-        context.drawText(textRenderer, "Drag bottom-right corner to resize.", 224, 179, 0xFFCCCCCC, false);
-        context.drawText(textRenderer, "Color: RRGGBB or AARRGGBB", 224, 72, 0xFFCCCCCC, false);
+        context.drawText(textRenderer, "Colors", rightX, 72, 0xFFCCCCCC, false);
+        context.drawText(textRenderer, "Accent palette (HEX also supported)", rightX, 126, 0xFFCCCCCC, false);
+        context.drawText(textRenderer, "Selected widget preview", rightX, Math.max(170, height - 78), 0xFFCCCCCC, false);
 
-        drawWidgetPreview(context, "FPS", "FPS  120", PollithiumConfig.showFps, 8, 8, 120, 30, mouseX, mouseY);
-        drawWidgetPreview(context, "PING", "PING  35 ms", PollithiumConfig.showPing, 8, 44, 130, 30, mouseX, mouseY);
-        drawWidgetPreview(context, "COORDS", "XYZ  120 / 64 / -20", PollithiumConfig.showCoordinates, 8, 80, 190, 30, mouseX, mouseY);
-        drawWidgetPreview(context, "DIRECTION", "FACING  N", PollithiumConfig.showDirection, 8, 116, 130, 30, mouseX, mouseY);
-        drawWidgetPreview(context, "CLOCK", "TIME  12:30:00", PollithiumConfig.showClock, 8, 152, 145, 30, mouseX, mouseY);
-        drawWidgetPreview(context, "CPS", "CPS  0 | 0", PollithiumConfig.showCps, 8, 188, 135, 30, mouseX, mouseY);
-        drawWidgetPreview(context, "ARMOR", "ARMOR  100 100 100 100", PollithiumConfig.showArmor, 8, 224, 180, 30, mouseX, mouseY);
-        drawWidgetPreview(context, "EFFECTS", "Potion effects", PollithiumConfig.showEffects, 8, 260, 180, 42, mouseX, mouseY);
-        drawWidgetPreview(context, "KEYS", "W A S D", PollithiumConfig.showKeystrokes, 8, 308, 92, 52, mouseX, mouseY);
+        PollithiumConfig.WidgetLayout layout = layoutFor(selected);
+        int boxWidth = Math.min(layout.width, rightWidth);
+        int boxHeight = Math.min(layout.height, 48);
+        int x = previewX + previewOffsetX;
+        int y = previewY + previewOffsetY;
+        x = Math.max(rightX, Math.min(width - boxWidth - 4, x));
+        y = Math.max(Math.max(170, height - 72), Math.min(height - boxHeight - 6, y));
+        boolean enabled = isEnabled(selected);
+        context.fill(x, y, x + boxWidth, y + boxHeight, enabled ? PollithiumConfig.panelColor : 0x66444444);
+        context.fill(x, y, x + boxWidth, y + 2, PollithiumConfig.accentColor);
+        context.drawText(textRenderer, WIDGETS.get(selected), x + 6, y + 8, enabled ? 0xFFFFFFFF : 0xFF999999, false);
+        context.fill(x + boxWidth - 7, y + boxHeight - 7, x + boxWidth, y + boxHeight, 0xFFFFFFFF);
+        context.drawStrokedRectangle(x, y, boxWidth, boxHeight, 0xFF38BDF8);
 
-        PollithiumConfig.WidgetLayout active = layoutFor(selected);
-        if (active != null) {
-            int cx = active.x + active.width / 2;
-            int cy = active.y + active.height / 2;
-            if (Math.abs(cx - width / 2) <= 4) context.fill(width / 2, 0, width / 2 + 1, height, 0xAA38BDF8);
-            if (Math.abs(cy - height / 2) <= 4) context.fill(216, height / 2, width, height / 2 + 1, 0xAA38BDF8);
+        int centerX = rightX + rightWidth / 2;
+        int centerY = Math.max(170, height - 72) + Math.max(0, height - Math.max(170, height - 72)) / 2;
+        if (Math.abs((x + boxWidth / 2) - centerX) <= 4) {
+            context.fill(centerX, Math.max(170, height - 72), centerX + 1, height - 4, 0xAA38BDF8);
+        }
+        if (Math.abs((y + boxHeight / 2) - centerY) <= 4) {
+            context.fill(rightX, centerY, width - 4, centerY + 1, 0xAA38BDF8);
         }
         super.render(context, mouseX, mouseY, delta);
     }
 
-    private void drawWidgetPreview(DrawContext context, String id, String sample, boolean enabled,
-                                   int dx, int dy, int dw, int dh, int mouseX, int mouseY) {
-        if (!enabled) return;
-        PollithiumConfig.WidgetLayout l = PollithiumConfig.widget(id, dx, dy, dw, dh);
-        boolean isSelected = id.equals(selected);
-        int displayX = isSelected && l.x <= 216 ? width - 210 : l.x;
-        int displayY = isSelected && l.x <= 216 ? height / 2 - 40 : l.y;
-        int color = isSelected ? 0xCC26364A : PollithiumConfig.panelColor;
-        context.fill(displayX, displayY, displayX + l.width, displayY + l.height, color);
-        context.fill(displayX, displayY, displayX + l.width, displayY + 2, PollithiumConfig.accentColor);
-        context.drawText(textRenderer, sample, displayX + 6, displayY + 8, 0xFFFFFFFF, false);
-        if (isSelected) {
-            context.fill(displayX + l.width - 7, displayY + l.height - 7, displayX + l.width, displayY + l.height, 0xFFFFFFFF);
-            context.drawStrokedRectangle(displayX, displayY, l.width, l.height, 0xFF38BDF8);
-            context.drawText(textRenderer, "Drag / resize", displayX, displayY + l.height + 5, 0xFFFFFFFF, false);
-        }
+    private boolean isEnabled(String id) {
+        return switch (id) {
+            case "FPS" -> PollithiumConfig.showFps;
+            case "PING" -> PollithiumConfig.showPing;
+            case "COORDS" -> PollithiumConfig.showCoordinates;
+            case "DIRECTION" -> PollithiumConfig.showDirection;
+            case "CLOCK" -> PollithiumConfig.showClock;
+            case "CPS" -> PollithiumConfig.showCps;
+            case "ARMOR" -> PollithiumConfig.showArmor;
+            case "EFFECTS" -> PollithiumConfig.showEffects;
+            case "KEYS" -> PollithiumConfig.showKeystrokes;
+            default -> true;
+        };
     }
 
     private PollithiumConfig.WidgetLayout layoutFor(String id) {
@@ -167,66 +232,15 @@ public final class HudEditorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && mouseX > 216) {
-            PollithiumConfig.WidgetLayout l = layoutFor(selected);
-            int displayX = l.x <= 216 ? width - 210 : l.x;
-            int displayY = l.x <= 216 ? height / 2 - 40 : l.y;
-            if (mouseX >= displayX && mouseX <= displayX + l.width && mouseY >= displayY && mouseY <= displayY + l.height) {
-                resizing = mouseX >= displayX + l.width - 9 && mouseY >= displayY + l.height - 9;
-                dragging = !resizing;
-                lastMouseX = mouseX; lastMouseY = mouseY;
-                return true;
-            }
-        }
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if ((dragging || resizing) && button == 0) {
-            PollithiumConfig.WidgetLayout l = layoutFor(selected);
-            int dx = (int) Math.round(mouseX - lastMouseX);
-            int dy = (int) Math.round(mouseY - lastMouseY);
-            if (dragging) {
-                l.x = Math.max(0, Math.min(width - l.width, snap(l.x + dx)));
-                l.y = Math.max(0, Math.min(height - l.height, snap(l.y + dy)));
-            } else {
-                l.width = Math.max(72, Math.min(320, snap(l.width + dx)));
-                l.height = Math.max(22, Math.min(180, snap(l.height + dy)));
-            }
-            lastMouseX = mouseX; lastMouseY = mouseY;
-            return true;
-        }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-    }
-
-    private int snap(int value) { return Math.max(0, Math.round(value / 8.0f) * 8); }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0 && (dragging || resizing)) {
-            dragging = false; resizing = false;
-            PollithiumConfig.save();
-            return true;
-        }
-        return super.mouseReleased(mouseX, mouseY, button);
-    }
-
-    @Override
-    public void close() {
-        PollithiumConfig.save();
-        if (client != null) client.setScreen(null);
-    }
-}    @Override
     public boolean mouseClicked(Click click, boolean doubled) {
-        if (click.button() == org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1 && click.x() > 216) {
-            PollithiumConfig.WidgetLayout l = layoutFor(selected);
-            int displayX = width - 210;
-            int displayY = height / 2 - 40;
-            if (click.x() >= displayX && click.x() <= displayX + l.width
-                    && click.y() >= displayY && click.y() <= displayY + l.height) {
-                resizing = click.x() >= displayX + l.width - 9 && click.y() >= displayY + l.height - 9;
+        if (click.button() == GLFW.GLFW_MOUSE_BUTTON_1) {
+            PollithiumConfig.WidgetLayout layout = layoutFor(selected);
+            int boxWidth = Math.min(layout.width, rightWidth);
+            int boxHeight = Math.min(layout.height, 48);
+            int x = Math.max(rightX, Math.min(width - boxWidth - 4, previewX + previewOffsetX));
+            int y = Math.max(Math.max(170, height - 72), Math.min(height - boxHeight - 6, previewY + previewOffsetY));
+            if (click.x() >= x && click.x() <= x + boxWidth && click.y() >= y && click.y() <= y + boxHeight) {
+                resizing = click.x() >= x + boxWidth - 9 && click.y() >= y + boxHeight - 9;
                 dragging = !resizing;
                 return true;
             }
@@ -236,42 +250,31 @@ public final class HudEditorScreen extends Screen {
 
     @Override
     public boolean mouseDragged(Click click, double offsetX, double offsetY) {
-        if ((dragging || resizing) && click.button() == org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1) {
-            PollithiumConfig.WidgetLayout l = layoutFor(selected);
+        if ((dragging || resizing) && click.button() == GLFW.GLFW_MOUSE_BUTTON_1) {
+            PollithiumConfig.WidgetLayout layout = layoutFor(selected);
             int dx = (int) Math.round(offsetX);
             int dy = (int) Math.round(offsetY);
             if (dragging) {
-                l.x = Math.max(0, Math.min(width - l.width, snap(l.x + dx)));
-                l.y = Math.max(0, Math.min(height - l.height, snap(l.y + dy)));
+                layout.x = Math.max(0, snap(layout.x + dx));
+                layout.y = Math.max(0, snap(layout.y + dy));
+                previewOffsetX = Math.max(0, Math.min(rightWidth - 72, previewOffsetX + dx));
+                previewOffsetY = Math.max(0, Math.min(48, previewOffsetY + dy));
             } else {
-                l.width = Math.max(72, Math.min(320, snap(l.width + dx)));
-                l.height = Math.max(22, Math.min(180, snap(l.height + dy)));
+                layout.width = Math.max(72, Math.min(320, snap(layout.width + dx)));
+                layout.height = Math.max(22, Math.min(180, snap(layout.height + dy)));
             }
             return true;
         }
         return super.mouseDragged(click, offsetX, offsetY);
     }
 
-    private int snap(int value) { return Math.max(0, Math.round(value / 8.0f) * 8); }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0 && (dragging || resizing)) {
-            dragging = false; resizing = false;
-            PollithiumConfig.save();
-            return true;
-        }
-        return super.mouseReleased(mouseX, mouseY, button);
+    private int snap(int value) {
+        return Math.max(0, Math.round(value / 8.0f) * 8);
     }
 
     @Override
-    public void close() {
-        PollithiumConfig.save();
-        if (client != null) client.setScreen(null);
-    }
-}    @Override
     public boolean mouseReleased(Click click) {
-        if (click.button() == org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1 && (dragging || resizing)) {
+        if (click.button() == GLFW.GLFW_MOUSE_BUTTON_1 && (dragging || resizing)) {
             dragging = false;
             resizing = false;
             PollithiumConfig.save();
@@ -280,4 +283,9 @@ public final class HudEditorScreen extends Screen {
         return super.mouseReleased(click);
     }
 
-
+    @Override
+    public void close() {
+        PollithiumConfig.save();
+        if (client != null) client.setScreen(null);
+    }
+}
