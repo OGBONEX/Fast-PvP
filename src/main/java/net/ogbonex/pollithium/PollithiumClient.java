@@ -45,12 +45,12 @@ public final class PollithiumClient implements ClientModInitializer {
             if (wantsZoom && !zooming) {
                 previousFov = client.options.getFov().getValue();
                 zooming = true;
-            } else if (!wantsZoom && zooming) {
-                zooming = false;
             }
-            if (zooming) client.options.getFov().setValue(30);
-            else if (client.player != null && !wantsZoom && previousFov != 70) {
+            if (zooming && wantsZoom) {
+                client.options.getFov().setValue(30);
+            } else if (zooming) {
                 client.options.getFov().setValue((int) previousFov);
+                zooming = false;
                 previousFov = 70;
             }
             PollithiumHud.tick(client);
