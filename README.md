@@ -2,7 +2,7 @@
 
 Pollithium is a client-side Fabric utility mod with a configurable HUD and visual customization. It is designed for information display and interface personalization.
 
-## Current implementation
+## Features
 
 - FPS, server ping, XYZ coordinates, cardinal direction, local clock, biome, dimension, in-game world time, and JVM memory usage.
 - Left/right click-rate counter.
@@ -18,7 +18,7 @@ Pollithium is a client-side Fabric utility mod with a configurable HUD and visua
 - Optional toggle-sprint keybind (unbound by default; enable it in the editor first).
 - F8 toggles the HUD; Right Shift opens the HUD editor.
 
-## Current build target
+## Target
 
 The current source tree targets **Minecraft 1.21.11**, Fabric, and Java 21.
 
@@ -40,7 +40,7 @@ A single Fabric JAR cannot cover every Minecraft version. The compatibility stat
 
 Do not install the 1.21.11 JAR into a different Minecraft version.
 
-## Editor use
+## Open Menu
 
 1. Press **Right Shift** to open the editor.
 2. Use the **Selected** button to choose a widget.
