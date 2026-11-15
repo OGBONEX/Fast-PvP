@@ -57,3 +57,14 @@ Pollithium focuses on HUD information and visual customization. It does not incl
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+
+## Modrinth publishing
+
+The release workflow at `.github/workflows/modrinth-publish.yml` publishes a Fabric client JAR when a `v*` Git tag is pushed. It currently advertises **Minecraft 1.21.11 only**, because that is the only source port built by this repository.
+
+Before publishing, configure these repository Actions secrets:
+- `MODRINTH_TOKEN`: a Modrinth personal token with permission to create project versions.
+- `MODRINTH_PROJECT_ID`: the ID of the existing Pollithium Modrinth project.
+
+After the version ports are independently built and tested, update the workflow's `game_versions` metadata for each matching artifact. Do not list a Minecraft version on Modrinth unless that exact artifact has passed CI and client launch testing.
