@@ -1,6 +1,7 @@
 package net.ogbonex.pollithium;
 
-import net.minecraft.client.gui.Click;\nimport net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
