@@ -62,23 +62,23 @@ public final class PollithiumHud {
             String biome = client.world.getBiome(client.player.getBlockPos()).getKey()
                     .map(key -> key.getValue().getPath().replace('_', ' '))
                     .orElse("unknown");
-            draw(context, client, "BIOME", "BIOME  " + biome, 8, 188, 180, 30);
+            draw(context, client, "BIOME", "BIOME  " + biome, 8, 368, 180, 30);
         }
         if (PollithiumConfig.showDimension && client.world != null) {
             String dimension = client.world.getRegistryKey().getValue().getPath().replace('_', ' ');
-            draw(context, client, "DIMENSION", "WORLD  " + dimension, 8, 224, 180, 30);
+            draw(context, client, "DIMENSION", "WORLD  " + dimension, 8, 404, 180, 30);
         }
         if (PollithiumConfig.showWorldTime && client.world != null) {
             long time = Math.floorMod(client.world.getTimeOfDay(), 24000L);
             int hour = (int) ((time / 1000 + 6) % 24);
             int minute = (int) (time % 1000 * 60 / 1000);
-            draw(context, client, "WORLDTIME", String.format("WORLD TIME  %02d:%02d", hour, minute), 8, 260, 180, 30);
+            draw(context, client, "WORLDTIME", String.format("WORLD TIME  %02d:%02d", hour, minute), 8, 440, 180, 30);
         }
         if (PollithiumConfig.showMemory) {
             Runtime runtime = Runtime.getRuntime();
             long usedMb = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024);
             long maxMb = runtime.maxMemory() / (1024 * 1024);
-            draw(context, client, "MEMORY", "MEMORY  " + usedMb + " / " + maxMb + " MB", 8, 296, 190, 30);
+            draw(context, client, "MEMORY", "MEMORY  " + usedMb + " / " + maxMb + " MB", 8, 476, 190, 30);
         }
         if (PollithiumConfig.showCps) draw(context, client, "CPS", "CPS  " + leftCps + " | " + rightCps, 8, 188, 135, 30);
         if (PollithiumConfig.showArmor) draw(context, client, "ARMOR", "ARMOR  " + armorSummary(client), 8, 224, 180, 30);
