@@ -33,6 +33,10 @@ public final class HudEditorScreen extends Screen {
         WIDGETS.put("ARMOR", "Armor");
         WIDGETS.put("EFFECTS", "Effects");
         WIDGETS.put("KEYS", "Keys");
+        WIDGETS.put("BIOME", "Biome");
+        WIDGETS.put("DIMENSION", "Dimension");
+        WIDGETS.put("WORLDTIME", "World time");
+        WIDGETS.put("MEMORY", "Memory");
     }
 
     private String selected = "FPS";
@@ -74,6 +78,10 @@ public final class HudEditorScreen extends Screen {
         addToggle("Shulker", () -> PollithiumConfig.shulkerBoxTooltipEnabled = !PollithiumConfig.shulkerBoxTooltipEnabled, () -> PollithiumConfig.shulkerBoxTooltipEnabled, 10);
         addToggle("Crosshair", () -> PollithiumConfig.showCrosshair = !PollithiumConfig.showCrosshair, () -> PollithiumConfig.showCrosshair, 11);
         addToggle("Sprint", () -> PollithiumConfig.toggleSprintEnabled = !PollithiumConfig.toggleSprintEnabled, () -> PollithiumConfig.toggleSprintEnabled, 12);
+        addToggle("Biome", () -> PollithiumConfig.showBiome = !PollithiumConfig.showBiome, () -> PollithiumConfig.showBiome, 13);
+        addToggle("Dimension", () -> PollithiumConfig.showDimension = !PollithiumConfig.showDimension, () -> PollithiumConfig.showDimension, 14);
+        addToggle("World time", () -> PollithiumConfig.showWorldTime = !PollithiumConfig.showWorldTime, () -> PollithiumConfig.showWorldTime, 15);
+        addToggle("Memory", () -> PollithiumConfig.showMemory = !PollithiumConfig.showMemory, () -> PollithiumConfig.showMemory, 16);
 
         addDrawableChild(ButtonWidget.builder(Text.literal("Widget: " + WIDGETS.get(selected)), button -> {
             String[] ids = WIDGETS.keySet().toArray(String[]::new);
@@ -208,6 +216,10 @@ public final class HudEditorScreen extends Screen {
             case "ARMOR" -> PollithiumConfig.showArmor;
             case "EFFECTS" -> PollithiumConfig.showEffects;
             case "KEYS" -> PollithiumConfig.showKeystrokes;
+            case "BIOME" -> PollithiumConfig.showBiome;
+            case "DIMENSION" -> PollithiumConfig.showDimension;
+            case "WORLDTIME" -> PollithiumConfig.showWorldTime;
+            case "MEMORY" -> PollithiumConfig.showMemory;
             default -> true;
         };
     }
@@ -227,6 +239,10 @@ public final class HudEditorScreen extends Screen {
             case "ARMOR" -> new int[]{8, 224, 180, 30};
             case "EFFECTS" -> new int[]{8, 260, 180, 42};
             case "KEYS" -> new int[]{8, 308, 92, 52};
+            case "BIOME" -> new int[]{8, 332, 180, 30};
+            case "DIMENSION" -> new int[]{8, 368, 180, 30};
+            case "WORLDTIME" -> new int[]{8, 404, 180, 30};
+            case "MEMORY" -> new int[]{8, 440, 190, 30};
             default -> new int[]{8, 8, 120, 30};
         };
     }
