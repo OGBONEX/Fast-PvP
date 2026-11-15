@@ -16,7 +16,7 @@ public abstract class HitFeedbackMixin {
     @Inject(method="onEntityDamage", at=@At("TAIL"))
     private void pollithium$onConfirmedDamage(EntityDamageS2CPacket packet, CallbackInfo ci) {
         MinecraftClient client=MinecraftClient.getInstance();
-        if(client.player==null || client.world==null || client.player.getAttackCooldownProgress(0.0f)<0.0f) return;
+        if(client.player==null || client.world==null) return;
         if(client.targetedEntity==null || client.targetedEntity.getId()!=packet.entityId()) return;
         PollithiumHud.recordConfirmedHit();
         if(PollithiumConfig.hitSoundEnabled) client.player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,0.55f,1.35f);
