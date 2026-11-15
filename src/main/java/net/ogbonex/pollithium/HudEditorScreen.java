@@ -100,7 +100,7 @@ public final class HudEditorScreen extends Screen {
         }).dimensions(rightX, 50, rightWidth, 20).build());
 
         int fieldWidth = Math.max(40, rightWidth - 48);
-        accentField = new TextFieldWidget(textRenderer, rightX, 80, fieldWidth, 20, Text.literal("Accent HEX"));
+        accentField = new TextFieldWidget(textRenderer, rightX, 80, fieldWidth, 20, Text.literal("Theme HEX"));
         accentField.setMaxLength(8);
         accentField.setText(String.format("%08X", PollithiumConfig.accentColor));
         accentField.setPlaceholder(Text.literal("AARRGGBB"));
@@ -122,20 +122,22 @@ public final class HudEditorScreen extends Screen {
             int row = i / 6;
             int cellWidth = Math.max(12, (rightWidth - 20) / 6);
             addDrawableChild(ButtonWidget.builder(Text.literal(PALETTE_LABELS[i]), button -> {
-                PollithiumConfig.accentColor = color;
+                applyTheme(color);
                 accentField.setText(String.format("%08X", color));
-                PollithiumConfig.save();
             }).dimensions(rightX + col * (cellWidth + 3), 136 + row * 22, cellWidth, 19).build());
         }
+
+        addDrawableChild(ButtonWidget.builder(Text.literal("Apply theme colour"), button -> applyThemeFromField())
+                .dimensions(rightX, 184, rightWidth, 20).build());
 
         addDrawableChild(ButtonWidget.builder(Text.literal("Reset positions"), button -> {
             PollithiumConfig.widgets.clear();
             previewOffsetX = 0;
             previewOffsetY = 0;
             PollithiumConfig.save();
-        }).dimensions(rightX, 184, rightWidth, 20).build());
+        }).dimensions(rightX, 208, rightWidth, 20).build());
         addDrawableChild(ButtonWidget.builder(Text.literal("Done"), button -> close())
-                .dimensions(rightX, 208, rightWidth, 20).build());
+                .dimensions(rightX, 232, rightWidth, 20).build());
     }
 
     private void contextPanel() {
@@ -153,6 +155,30 @@ public final class HudEditorScreen extends Screen {
             button.setMessage(Text.literal(name + ": " + (state.getAsBoolean() ? "ON" : "OFF")));
             PollithiumConfig.save();
         }).dimensions(x, y, cellWidth, 19).build());
+    }
+
+    private void applyThemeFromField() {
+        try {
+            String raw = accentField.getText().trim().replace("#", "");
+            if (raw.length() != 6 && raw.length() != 8) throw new NumberFormatException();
+            long parsed = Long.parseLong(raw, 16);
+            if (raw.length() == 6) parsed |= 0xFF000000L;
+            applyTheme((int) parsed);
+            accentField.setEditableColor(0xFFFFFFFF);
+        } catch (NumberFormatException exception) {
+            accentField.setEditableColor(0xFFFF5555);
+        }
+    }
+
+    private void applyTheme(int color) {
+        PollithiumConfig.accentColor = color;
+        int red = (color >> 16 & 0xFF) / 7;
+        int green = (color >> 8 & 0xFF) / 7;
+        int blue = (color & 0xFF) / 7;
+        PollithiumConfig.panelColor = 0xB0000000 | red << 16 | green << 8 | blue;
+        PollithiumConfig.save();
+        if (accentField != null) accentField.setText(String.format("%08X", color));
+        if (panelField != null) panelField.setText(String.format("%08X", PollithiumConfig.panelColor));
     }
 
     private void applyHex(TextFieldWidget field, boolean accent) {
