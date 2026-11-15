@@ -14,12 +14,14 @@ public final class PollithiumConfig {
     private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("pollithium.json");
 
     public static boolean hudEnabled = true;
-    public static boolean showFps = true;
-    public static boolean showCoordinates = true;
-    public static boolean showPing = true;
-    public static boolean showKeystrokes = true;
-    public static int hudX = 8;
-    public static int hudY = 8;
+    public static boolean showFps = true, showCoordinates = true, showPing = true;
+    public static boolean showKeystrokes = true, showCps = true, showArmor = true;
+    public static boolean showEffects = true, showClock = false, showDirection = true;
+    public static boolean showCrosshair = false;
+    public static boolean toggleSprintEnabled = false;
+    public static int hudX = 8, hudY = 8;
+    public static int accentColor = 0xFF8B5CF6;
+    public static int panelColor = 0x990D111B;
 
     private PollithiumConfig() {}
 
@@ -28,13 +30,13 @@ public final class PollithiumConfig {
         try (Reader reader = Files.newBufferedReader(FILE)) {
             Settings s = GSON.fromJson(reader, Settings.class);
             if (s == null) return;
-            hudEnabled = s.hudEnabled;
-            showFps = s.showFps;
-            showCoordinates = s.showCoordinates;
-            showPing = s.showPing;
-            showKeystrokes = s.showKeystrokes;
-            hudX = Math.max(0, s.hudX);
-            hudY = Math.max(0, s.hudY);
+            hudEnabled=s.hudEnabled; showFps=s.showFps; showCoordinates=s.showCoordinates;
+            showPing=s.showPing; showKeystrokes=s.showKeystrokes; showCps=s.showCps;
+            showArmor=s.showArmor; showEffects=s.showEffects; showClock=s.showClock;
+            showDirection=s.showDirection; showCrosshair=s.showCrosshair;
+            toggleSprintEnabled=s.toggleSprintEnabled;
+            hudX=Math.max(0,s.hudX); hudY=Math.max(0,s.hudY);
+            accentColor=s.accentColor; panelColor=s.panelColor;
         } catch (Exception e) {
             System.err.println("[Pollithium] Could not load config: " + e.getMessage());
         }
@@ -44,24 +46,22 @@ public final class PollithiumConfig {
         try {
             Files.createDirectories(FILE.getParent());
             Settings s = new Settings();
-            s.hudEnabled = hudEnabled;
-            s.showFps = showFps;
-            s.showCoordinates = showCoordinates;
-            s.showPing = showPing;
-            s.showKeystrokes = showKeystrokes;
-            s.hudX = hudX;
-            s.hudY = hudY;
-            try (Writer writer = Files.newBufferedWriter(FILE)) {
-                GSON.toJson(s, writer);
-            }
+            s.hudEnabled=hudEnabled; s.showFps=showFps; s.showCoordinates=showCoordinates;
+            s.showPing=showPing; s.showKeystrokes=showKeystrokes; s.showCps=showCps;
+            s.showArmor=showArmor; s.showEffects=showEffects; s.showClock=showClock;
+            s.showDirection=showDirection; s.showCrosshair=showCrosshair;
+            s.toggleSprintEnabled=toggleSprintEnabled;
+            s.hudX=hudX; s.hudY=hudY; s.accentColor=accentColor; s.panelColor=panelColor;
+            try (Writer writer=Files.newBufferedWriter(FILE)) { GSON.toJson(s,writer); }
         } catch (Exception e) {
             System.err.println("[Pollithium] Could not save config: " + e.getMessage());
         }
     }
 
     private static final class Settings {
-        boolean hudEnabled = true, showFps = true, showCoordinates = true;
-        boolean showPing = true, showKeystrokes = true;
-        int hudX = 8, hudY = 8;
+        boolean hudEnabled=true, showFps=true, showCoordinates=true, showPing=true;
+        boolean showKeystrokes=true, showCps=true, showArmor=true, showEffects=true;
+        boolean showClock=false, showDirection=true, showCrosshair=false, toggleSprintEnabled=false;
+        int hudX=8, hudY=8, accentColor=0xFF8B5CF6, panelColor=0x990D111B;
     }
 }
