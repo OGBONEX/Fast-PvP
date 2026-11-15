@@ -5,7 +5,7 @@ This file distinguishes the current tested build target from future compatibilit
 | Minecraft line | Status | Toolchain notes |
 |---|---|---|
 | 1.20.x | Not ported | Requires its own dependency profile and source/API compatibility work. |
-| 1.21.11 | Current target | Java 21, Fabric Loom remap plugin, Yarn mappings, Gradle 8.14.3 workflow. |
+| 1.21.11 | Current target | Java 21, Fabric Loom remap plugin, Yarn mappings, Gradle 9.2.0 workflow. |
 | 26.1–26.3 | Not ported | Requires a separate migration to official unobfuscated names, the non-remapping Loom plugin, updated Fabric API names, and a newer Java/Gradle toolchain. |
 
 ## Why these are separate builds
