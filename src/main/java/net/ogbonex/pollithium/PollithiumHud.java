@@ -14,6 +14,7 @@ public final class PollithiumHud {
     private static int leftCps, rightCps, leftClicks, rightClicks;
     private static boolean leftWasDown, rightWasDown;
     private static long cpsWindowStart = System.currentTimeMillis();
+    private static int hitMarkerTicks;
 
     private PollithiumHud() {}
 
@@ -33,6 +34,7 @@ public final class PollithiumHud {
     }
 
     public static void render(DrawContext context, MinecraftClient client) {
+        if (hitMarkerTicks > 0) hitMarkerTicks--;
         int x=PollithiumConfig.hudX, y=PollithiumConfig.hudY;
         int width=150, lineCount=0;
         if(PollithiumConfig.showFps) lineCount++;
@@ -127,10 +129,19 @@ public final class PollithiumHud {
 
     public static void renderCustomCrosshair(DrawContext context,MinecraftClient client) {
         int cx=client.getWindow().getScaledWidth()/2, cy=client.getWindow().getScaledHeight()/2;
-        int color=PollithiumConfig.accentColor;
+        int color=(client.targetedEntity instanceof net.minecraft.entity.LivingEntity) ? PollithiumConfig.hitColor : PollithiumConfig.accentColor;
         context.fill(cx-7,cy,cx-2,cy+1,color);
         context.fill(cx+2,cy,cx+7,cy+1,color);
         context.fill(cx,cy-7,cx+1,cy-2,color);
         context.fill(cx,cy+2,cx+1,cy+7,color);
+        if (PollithiumConfig.hitMarkerEnabled && hitMarkerTicks > 0) {
+            int marker=0xFFFFFFFF;
+            context.fill(cx-5,cy-5,cx-3,cy-3,marker);
+            context.fill(cx+3,cy-5,cx+5,cy-3,marker);
+            context.fill(cx-5,cy+3,cx-3,cy+5,marker);
+            context.fill(cx+3,cy+3,cx+5,cy+5,marker);
+        }
     }
+
+    public static void recordConfirmedHit() { hitMarkerTicks=8; }
 }
