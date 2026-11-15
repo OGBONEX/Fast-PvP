@@ -1,38 +1,50 @@
 # Pollithium
 
-Pollithium is a Fabric client-side Minecraft PvP utility mod. It focuses on readable information, HUD customization, and visual options—not automated combat or gameplay cheats.
+Pollithium is a client-side Fabric PvP utility mod with a Lunar-inspired configurable HUD. It is designed for information and visual customization, not automated combat or gameplay cheats.
 
-## Current implementation
+## Implemented in the current source
 
-- FPS, ping, coordinates, and WASD keystrokes HUD.
-- HUD visibility toggle (default: **F8**).
-- HUD editor (default: **Right Shift**) with draggable preview and module toggles.
-- HUD position and module settings saved to `config/pollithium.json`.
-- Dark translucent HUD panel with an accent strip.
+- FPS counter.
+- Server ping display.
+- XYZ coordinates.
+- Cardinal direction.
+- Local clock.
+- CPS counter for left and right mouse clicks.
+- Armor durability values.
+- Active potion/effect names, amplifier levels, and remaining time.
+- WASD keystrokes display.
+- Draggable HUD position with saved configuration.
+- HUD editor toggles for each module.
+- Dark translucent HUD panel and configurable accent/panel colors in config.
+- Custom crosshair that replaces the vanilla crosshair when enabled.
+- Hold-to-zoom keybind (C by default), restoring the previous FOV when released.
+- Toggle sprint keybind (unbound by default; enable it in the HUD editor first).
+- F8 toggles the HUD; Right Shift opens the HUD editor.
+- Settings persist in `config/pollithium.json`.
 
-## Build
+## Build target
 
-The first target is Minecraft **1.21.11** on Java 21.
+The first build target is Minecraft **1.21.11**, Fabric, and Java 21.
 
 1. Install JDK 21.
-2. Install Gradle 8.14 or newer.
+2. Install Gradle 8.14.3 or newer.
 3. Clone this repository.
-4. Run `gradle build`.
+4. Run `gradle clean build --no-daemon`.
 5. Find the mod JAR in `build/libs/`.
 
-Use the Fabric Loader and Fabric API versions declared in `gradle.properties`.
+A GitHub Actions workflow builds the project on pushes and pull requests and uploads the JAR as a workflow artifact when the build succeeds.
 
-## Version support
+## Minecraft version coverage
 
-Minecraft versions are not all binary-compatible. Pollithium will use version-specific build targets rather than claiming one JAR works across every release. The initial target is 1.21.11; older 1.20.x releases and the newer 26.x line need their own compatibility work and testing.
+A single Fabric JAR is not compatible with every Minecraft release. The initial target is 1.21.11. Separate build configurations and testing are required for 1.20.x and the newer 26.x versions. Those targets are not yet included.
 
-## Planned
+## Still to implement
 
-CPS, armor durability, potion timers, custom crosshair, toggle sprint, perspective/zoom controls, low-fire rendering, configurable colors, resizable HUD modules, and expanded editor controls.
+Resizable individual HUD widgets, drag alignment guides, a full color-picker/settings screen, low-fire rendering, custom hit sounds, configurable hit color, visual damage indicators, and dedicated compatibility builds for the rest of the requested Minecraft versions.
 
-## Safety / scope
+## Scope
 
-Pollithium is a client-side utility mod. It will not implement aim assistance, autoclicking, reach changes, kill aura, velocity manipulation, or automated combat.
+No aim assistance, autoclicking, reach changes, kill aura, velocity manipulation, or automated combat features.
 
 ## License
 
