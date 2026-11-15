@@ -12,14 +12,19 @@ import java.time.format.DateTimeFormatter;
 
 public final class PollithiumHud {
     private static int leftCps, rightCps, leftClicks, rightClicks;
+    private static boolean leftWasDown, rightWasDown;
     private static long cpsWindowStart = System.currentTimeMillis();
 
     private PollithiumHud() {}
 
     public static void tick(MinecraftClient client) {
         if (client.getWindow() == null) return;
-        if (GLFW.glfwGetMouseButton(client.getWindow().getHandle(), GLFW.GLFW_MOUSE_BUTTON_1) == GLFW.GLFW_PRESS) leftClicks++;
-        if (GLFW.glfwGetMouseButton(client.getWindow().getHandle(), GLFW.GLFW_MOUSE_BUTTON_2) == GLFW.GLFW_PRESS) rightClicks++;
+        boolean leftDown = GLFW.glfwGetMouseButton(client.getWindow().getHandle(), GLFW.GLFW_MOUSE_BUTTON_1) == GLFW.GLFW_PRESS;
+        boolean rightDown = GLFW.glfwGetMouseButton(client.getWindow().getHandle(), GLFW.GLFW_MOUSE_BUTTON_2) == GLFW.GLFW_PRESS;
+        if (leftDown && !leftWasDown) leftClicks++;
+        if (rightDown && !rightWasDown) rightClicks++;
+        leftWasDown = leftDown;
+        rightWasDown = rightDown;
         long now=System.currentTimeMillis();
         if (now-cpsWindowStart >= 1000) {
             leftCps=leftClicks; rightCps=rightClicks;
