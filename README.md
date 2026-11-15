@@ -4,7 +4,7 @@ Pollithium is a client-side Fabric utility mod with a configurable HUD and visua
 
 ## Current implementation
 
-- FPS, server ping, XYZ coordinates, cardinal direction, and local clock.
+- FPS, server ping, XYZ coordinates, cardinal direction, local clock, biome, dimension, in-game world time, and JVM memory usage.
 - Left/right click-rate counter.
 - Armor durability and active potion/effect information.
 - WASD keystrokes display.
@@ -23,7 +23,7 @@ Pollithium is a client-side Fabric utility mod with a configurable HUD and visua
 The current source tree targets **Minecraft 1.21.11**, Fabric, and Java 21.
 
 1. Install JDK 21.
-2. Install Gradle 8.14.3 or newer.
+2. Install Gradle 9.2.0 or newer.
 3. Clone this repository.
 4. Run `gradle clean build --no-daemon`.
 5. Find the mod JAR in `build/libs/`.
