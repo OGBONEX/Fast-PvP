@@ -132,13 +132,17 @@ public final class HudEditorScreen extends Screen {
                                    int dx, int dy, int dw, int dh, int mouseX, int mouseY) {
         if (!enabled) return;
         PollithiumConfig.WidgetLayout l = PollithiumConfig.widget(id, dx, dy, dw, dh);
-        int color = id.equals(selected) ? 0xCC26364A : PollithiumConfig.panelColor;
-        context.fill(l.x, l.y, l.x + l.width, l.y + l.height, color);
-        context.fill(l.x, l.y, l.x + l.width, l.y + 2, PollithiumConfig.accentColor);
-        context.drawText(textRenderer, sample, l.x + 6, l.y + 8, 0xFFFFFFFF, false);
-        if (id.equals(selected)) {
-            context.fill(l.x + l.width - 7, l.y + l.height - 7, l.x + l.width, l.y + l.height, 0xFFFFFFFF);
-            context.drawBorder(l.x, l.y, l.width, l.height, 0xFF38BDF8);
+        boolean isSelected = id.equals(selected);
+        int displayX = isSelected && l.x <= 216 ? width - 210 : l.x;
+        int displayY = isSelected && l.x <= 216 ? height / 2 - 40 : l.y;
+        int color = isSelected ? 0xCC26364A : PollithiumConfig.panelColor;
+        context.fill(displayX, displayY, displayX + l.width, displayY + l.height, color);
+        context.fill(displayX, displayY, displayX + l.width, displayY + 2, PollithiumConfig.accentColor);
+        context.drawText(textRenderer, sample, displayX + 6, displayY + 8, 0xFFFFFFFF, false);
+        if (isSelected) {
+            context.fill(displayX + l.width - 7, displayY + l.height - 7, displayX + l.width, displayY + l.height, 0xFFFFFFFF);
+            context.drawBorder(displayX, displayY, l.width, l.height, 0xFF38BDF8);
+            context.drawText(textRenderer, "Drag / resize", displayX, displayY + l.height + 5, 0xFFFFFFFF, false);
         }
     }
 
@@ -165,8 +169,10 @@ public final class HudEditorScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && mouseX > 216) {
             PollithiumConfig.WidgetLayout l = layoutFor(selected);
-            if (mouseX >= l.x && mouseX <= l.x + l.width && mouseY >= l.y && mouseY <= l.y + l.height) {
-                resizing = mouseX >= l.x + l.width - 9 && mouseY >= l.y + l.height - 9;
+            int displayX = l.x <= 216 ? width - 210 : l.x;
+            int displayY = l.x <= 216 ? height / 2 - 40 : l.y;
+            if (mouseX >= displayX && mouseX <= displayX + l.width && mouseY >= displayY && mouseY <= displayY + l.height) {
+                resizing = mouseX >= displayX + l.width - 9 && mouseY >= displayY + l.height - 9;
                 dragging = !resizing;
                 lastMouseX = mouseX; lastMouseY = mouseY;
                 return true;
