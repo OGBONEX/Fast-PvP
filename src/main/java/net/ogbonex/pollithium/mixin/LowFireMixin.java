@@ -1,0 +1,19 @@
+package net.ogbonex.pollithium.mixin;
+
+import net.ogbonex.pollithium.PollithiumConfig;
+import net.minecraft.client.gui.hud.InGameOverlayRenderer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(InGameOverlayRenderer.class)
+public abstract class LowFireMixin {
+    @Inject(method="renderFireOverlay", at=@At("HEAD"), cancellable=true)
+    private static void pollithium$hideFire(MatrixStack matrices, VertexConsumerProvider consumers, Sprite sprite, CallbackInfo ci) {
+        if (PollithiumConfig.lowFireEnabled) ci.cancel();
+    }
+}
