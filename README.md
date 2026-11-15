@@ -49,3 +49,19 @@ No aim assistance, autoclicking, reach changes, kill aura, velocity manipulation
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+
+## New options added
+
+The latest implementation adds:
+- **Low fire** toggle in the Pollithium settings screen.
+- **Shulker box tooltip** toggle. When enabled, hovering a shulker box item adds a compact contents list to its tooltip.
+- **Target-aware crosshair color**: the custom crosshair switches to the configured hit color while targeting a living entity.
+- **Confirmed-hit marker** on the custom crosshair.
+- **Custom hit sound** toggle, played locally when the client receives a damage event for the entity currently under the crosshair.
+- HUD and hit-color palette cycling controls.
+- HUD position snapping to an 8-pixel grid while dragging.
+
+Open the settings with **Right Shift**. Toggle the HUD with **F8**. Zoom is held with **C**.
+
+These additions are committed to the repository, but they are not yet confirmed by a successful Gradle build or an in-game test. The advanced per-widget resize/independent placement editor and separately tested Minecraft-version builds are still outstanding. Do not treat the project as release-ready until those checks pass.
