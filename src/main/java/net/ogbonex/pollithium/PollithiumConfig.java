@@ -18,6 +18,8 @@ public final class PollithiumConfig {
     public static boolean hudEnabled = true;
     public static boolean showFps = true, showCoordinates = true, showPing = true, showKeystrokes = true, showCps = true;
     public static boolean showArmor = true, showEffects = true, showClock = false, showDirection = true, showCrosshair = false;
+        boolean showBiome = true, showDimension = true, showWorldTime = false, showMemory = false;
+    public static boolean showBiome = true, showDimension = true, showWorldTime = false, showMemory = false;
     public static boolean toggleSprintEnabled = false, lowFireEnabled = true, shulkerBoxTooltipEnabled = true;
     public static int hudX = 8, hudY = 8, accentColor = 0xFF8B5CF6, panelColor = 0x990D111B;
     public static final Map<String, WidgetLayout> widgets = new LinkedHashMap<>();
@@ -37,6 +39,7 @@ public final class PollithiumConfig {
             showFps = s.showFps; showCoordinates = s.showCoordinates; showPing = s.showPing;
             showKeystrokes = s.showKeystrokes; showCps = s.showCps; showArmor = s.showArmor;
             showEffects = s.showEffects; showClock = s.showClock; showDirection = s.showDirection;
+            showBiome = s.showBiome; showDimension = s.showDimension; showWorldTime = s.showWorldTime; showMemory = s.showMemory;
             showCrosshair = s.showCrosshair; toggleSprintEnabled = s.toggleSprintEnabled;
             lowFireEnabled = s.lowFireEnabled; shulkerBoxTooltipEnabled = s.shulkerBoxTooltipEnabled;
             hudX = Math.max(0, s.hudX); hudY = Math.max(0, s.hudY);
@@ -60,6 +63,7 @@ public final class PollithiumConfig {
             s.showFps = showFps; s.showCoordinates = showCoordinates; s.showPing = showPing;
             s.showKeystrokes = showKeystrokes; s.showCps = showCps; s.showArmor = showArmor;
             s.showEffects = showEffects; s.showClock = showClock; s.showDirection = showDirection;
+            s.showBiome = showBiome; s.showDimension = showDimension; s.showWorldTime = showWorldTime; s.showMemory = showMemory;
             s.showCrosshair = showCrosshair; s.toggleSprintEnabled = toggleSprintEnabled;
             s.lowFireEnabled = lowFireEnabled; s.shulkerBoxTooltipEnabled = shulkerBoxTooltipEnabled;
             s.hudX = hudX; s.hudY = hudY; s.accentColor = accentColor; s.panelColor = panelColor;
