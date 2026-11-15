@@ -1,4 +1,6 @@
 {
   "key.pollithium.toggle_hud": "Toggle Pollithium HUD",
-  "key.pollithium.open_editor": "Open Pollithium HUD Editor"
+  "key.pollithium.open_editor": "Open Pollithium HUD Editor",
+  "key.pollithium.toggle_sprint": "Toggle Sprint",
+  "key.pollithium.zoom": "Hold to Zoom"
 }
