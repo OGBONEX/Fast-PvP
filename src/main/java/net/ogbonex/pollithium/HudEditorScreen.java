@@ -26,18 +26,12 @@ public final class HudEditorScreen extends Screen {
         addToggle("Direction",PollithiumConfig.showDirection,left+215,top+48,()->PollithiumConfig.showDirection=!PollithiumConfig.showDirection);
         addToggle("Custom crosshair",PollithiumConfig.showCrosshair,left+215,top+72,()->PollithiumConfig.showCrosshair=!PollithiumConfig.showCrosshair);
         addToggle("Toggle sprint",PollithiumConfig.toggleSprintEnabled,left+215,top+96,()->PollithiumConfig.toggleSprintEnabled=!PollithiumConfig.toggleSprintEnabled);
-        addToggle("Custom hit sound",PollithiumConfig.hitSoundEnabled,left+215,top+120,()->PollithiumConfig.hitSoundEnabled=!PollithiumConfig.hitSoundEnabled);
-        addToggle("Hit marker",PollithiumConfig.hitMarkerEnabled,left+215,top+144,()->PollithiumConfig.hitMarkerEnabled=!PollithiumConfig.hitMarkerEnabled);
         addDrawableChild(ButtonWidget.builder(Text.literal("Reset HUD position"),b->{PollithiumConfig.hudX=8;PollithiumConfig.hudY=8;PollithiumConfig.save();})
                 .dimensions(left,top+202,200,20).build());
         addDrawableChild(ButtonWidget.builder(Text.literal("Cycle HUD color"),b->{
             int[] colors={0xFF8B5CF6,0xFF38BDF8,0xFF34D399,0xFFFBBF24,0xFFF472B6,0xFFFFFFFF};
             PollithiumConfig.accentColor=nextColor(PollithiumConfig.accentColor,colors);PollithiumConfig.save();
         }).dimensions(left,top+226,200,20).build());
-        addDrawableChild(ButtonWidget.builder(Text.literal("Cycle hit color"),b->{
-            int[] colors={0xFFFF5555,0xFFFFAA00,0xFF55FF55,0xFF55AAFF,0xFFFFFFFF,0xFFFF55FF};
-            PollithiumConfig.hitColor=nextColor(PollithiumConfig.hitColor,colors);PollithiumConfig.save();
-        }).dimensions(left+215,top+226,200,20).build());
         addDrawableChild(ButtonWidget.builder(Text.literal("Done"),b->close())
                 .dimensions(left+215,top+202,200,20).build());
     }
