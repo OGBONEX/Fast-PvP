@@ -30,8 +30,21 @@ public final class HudEditorScreen extends Screen {
         addToggle("Hit marker",PollithiumConfig.hitMarkerEnabled,left+215,top+144,()->PollithiumConfig.hitMarkerEnabled=!PollithiumConfig.hitMarkerEnabled);
         addDrawableChild(ButtonWidget.builder(Text.literal("Reset HUD position"),b->{PollithiumConfig.hudX=8;PollithiumConfig.hudY=8;PollithiumConfig.save();})
                 .dimensions(left,top+202,200,20).build());
+        addDrawableChild(ButtonWidget.builder(Text.literal("Cycle HUD color"),b->{
+            int[] colors={0xFF8B5CF6,0xFF38BDF8,0xFF34D399,0xFFFBBF24,0xFFF472B6,0xFFFFFFFF};
+            PollithiumConfig.accentColor=nextColor(PollithiumConfig.accentColor,colors);PollithiumConfig.save();
+        }).dimensions(left,top+226,200,20).build());
+        addDrawableChild(ButtonWidget.builder(Text.literal("Cycle hit color"),b->{
+            int[] colors={0xFFFF5555,0xFFFFAA00,0xFF55FF55,0xFF55AAFF,0xFFFFFFFF,0xFFFF55FF};
+            PollithiumConfig.hitColor=nextColor(PollithiumConfig.hitColor,colors);PollithiumConfig.save();
+        }).dimensions(left+215,top+226,200,20).build());
         addDrawableChild(ButtonWidget.builder(Text.literal("Done"),b->close())
                 .dimensions(left+215,top+202,200,20).build());
+    }
+
+    private static int nextColor(int current,int[] palette){
+        for(int i=0;i<palette.length;i++)if(palette[i]==current)return palette[(i+1)%palette.length];
+        return palette[0];
     }
 
     private void addToggle(String name,boolean enabled,int x,int y,Runnable change){
@@ -42,7 +55,7 @@ public final class HudEditorScreen extends Screen {
     private void refresh(){clearChildren();init();}
 
     @Override public void render(DrawContext context,int mouseX,int mouseY,float delta){
-        renderBackground(context,mouseX,myY(mouseY),delta);
+        renderBackground(context,mouseX,mouseY,delta);
         context.drawCenteredTextWithShadow(textRenderer,title,width/2,height/2-158,0xFFFFFFFF);
         context.drawCenteredTextWithShadow(textRenderer,"Drag the preview to move your HUD",width/2,height/2+139,0xFFCCCCCC);
         int x=PollithiumConfig.hudX,y=PollithiumConfig.hudY;
@@ -52,7 +65,6 @@ public final class HudEditorScreen extends Screen {
         super.render(context,mouseX,mouseY,delta);
     }
 
-    private int myY(int mouseY){ return mouseY; }
 
     @Override public boolean mouseClicked(double mx,double my,int button){
         if(button==0&&mx>=PollithiumConfig.hudX&&mx<=PollithiumConfig.hudX+150&&my>=PollithiumConfig.hudY&&my<=PollithiumConfig.hudY+34){
@@ -63,8 +75,8 @@ public final class HudEditorScreen extends Screen {
 
     @Override public boolean mouseDragged(double mx,double my,int button,double dx,double dy){
         if(dragging&&button==0){
-            PollithiumConfig.hudX=Math.max(0,Math.min(width-150,(int)mx-dragOffsetX));
-            PollithiumConfig.hudY=Math.max(0,Math.min(height-34,(int)my-dragOffsetY));return true;
+            PollithiumConfig.hudX=Math.max(0,Math.min(width-150,((int)mx-dragOffsetX)/8*8));
+            PollithiumConfig.hudY=Math.max(0,Math.min(height-34,((int)my-dragOffsetY)/8*8));return true;
         }
         return super.mouseDragged(mx,my,button,dx,dy);
     }
