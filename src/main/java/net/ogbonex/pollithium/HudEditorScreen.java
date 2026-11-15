@@ -1,6 +1,6 @@
 package net.ogbonex.pollithium;
 
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Click;\nimport net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -141,7 +141,7 @@ public final class HudEditorScreen extends Screen {
         context.drawText(textRenderer, sample, displayX + 6, displayY + 8, 0xFFFFFFFF, false);
         if (isSelected) {
             context.fill(displayX + l.width - 7, displayY + l.height - 7, displayX + l.width, displayY + l.height, 0xFFFFFFFF);
-            context.drawBorder(displayX, displayY, l.width, l.height, 0xFF38BDF8);
+            context.drawStrokedRectangle(displayX, displayY, l.width, l.height, 0xFF38BDF8);
             context.drawText(textRenderer, "Drag / resize", displayX, displayY + l.height + 5, 0xFFFFFFFF, false);
         }
     }
@@ -217,4 +217,66 @@ public final class HudEditorScreen extends Screen {
         PollithiumConfig.save();
         if (client != null) client.setScreen(null);
     }
-}
+}    @Override
+    public boolean mouseClicked(Click click, boolean doubled) {
+        if (click.button() == org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1 && click.x() > 216) {
+            PollithiumConfig.WidgetLayout l = layoutFor(selected);
+            int displayX = width - 210;
+            int displayY = height / 2 - 40;
+            if (click.x() >= displayX && click.x() <= displayX + l.width
+                    && click.y() >= displayY && click.y() <= displayY + l.height) {
+                resizing = click.x() >= displayX + l.width - 9 && click.y() >= displayY + l.height - 9;
+                dragging = !resizing;
+                return true;
+            }
+        }
+        return super.mouseClicked(click, doubled);
+    }
+
+    @Override
+    public boolean mouseDragged(Click click, double offsetX, double offsetY) {
+        if ((dragging || resizing) && click.button() == org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1) {
+            PollithiumConfig.WidgetLayout l = layoutFor(selected);
+            int dx = (int) Math.round(offsetX);
+            int dy = (int) Math.round(offsetY);
+            if (dragging) {
+                l.x = Math.max(0, Math.min(width - l.width, snap(l.x + dx)));
+                l.y = Math.max(0, Math.min(height - l.height, snap(l.y + dy)));
+            } else {
+                l.width = Math.max(72, Math.min(320, snap(l.width + dx)));
+                l.height = Math.max(22, Math.min(180, snap(l.height + dy)));
+            }
+            return true;
+        }
+        return super.mouseDragged(click, offsetX, offsetY);
+    }
+
+    private int snap(int value) { return Math.max(0, Math.round(value / 8.0f) * 8); }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0 && (dragging || resizing)) {
+            dragging = false; resizing = false;
+            PollithiumConfig.save();
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public void close() {
+        PollithiumConfig.save();
+        if (client != null) client.setScreen(null);
+    }
+}    @Override
+    public boolean mouseReleased(Click click) {
+        if (click.button() == org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1 && (dragging || resizing)) {
+            dragging = false;
+            resizing = false;
+            PollithiumConfig.save();
+            return true;
+        }
+        return super.mouseReleased(click);
+    }
+
+
